@@ -13,25 +13,37 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.Property(e => e.Id) // This specifies which property is configured.
-            .IsRequired(); // Here it is specified if the property is required, meaning it cannot be null in the database.
-        builder.HasKey(x => x.Id); // Here it is specifies that the property Id is the primary key.
-        builder.Property(e => e.Name)
-            .HasMaxLength(255) // This specifies the maximum length for varchar type in the database.
+        builder.Property(e => e.Id)
+            .IsRequired()
+            .ValueGeneratedOnAdd(); // We want the id to be handled by the database automatically 
+        builder.HasKey(x => x.Id); // Id is PK
+        builder.Property(e => e.Username)
+            .HasMaxLength(255) 
             .IsRequired();
         builder.Property(e => e.Email)
             .HasMaxLength(255)
             .IsRequired();
-        builder.HasAlternateKey(e => e.Email); // Here it is specifies that the property Email is a unique key.
-        builder.Property(e => e.Password)
+        builder.Property(e => e.PasswordHash)
             .HasMaxLength(255)
             .IsRequired();
         builder.Property(e => e.Role)
-            .HasMaxLength(255)
+            .HasMaxLength(40)
             .IsRequired();
+
         builder.Property(e => e.CreatedAt)
             .IsRequired();
         builder.Property(e => e.UpdatedAt)
             .IsRequired();
+
+        // Unique Constraints
+        builder.HasIndex(e => e.Username).IsUnique();
+        builder.HasIndex(e => e.Email).IsUnique();
+
+        // Relationships
+        // One-to-One relationship with the UserProfile table
+        builder.HasOne(u => u.UserProfile)
+            .WithOne(p => p.User)
+            .HasForeignKey<User>(u => u.UserProfileId);
+
     }
 }

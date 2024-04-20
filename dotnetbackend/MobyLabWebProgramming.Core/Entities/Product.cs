@@ -8,6 +8,7 @@ namespace MobyLabWebProgramming.Core.Entities
         public string Description { get; set; } = default!;
         public decimal ? Price { get; set; }
         public decimal? Stock { get; set;}
+        public Guid? ProducerId { get; set; } // Foreign Key
         public Producer Producer { get; set; } = default!;
 
         // Direct many-to-many relationship to ProductCategory
