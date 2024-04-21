@@ -6,13 +6,6 @@ using System.Threading.Tasks;
 
 namespace MobyLabWebProgramming.Core.DataTransferObjects
 {
-    public class UserProfileUpdateDTO
-    {
-        public string FirstName { get; set; } = default!;
-        public string LastName { get; set; } = default!;
-        public string Address { get; set; } = default!;
-        public string Phone { get; set; } = default!;
-        public DateTime? BirthDate { get; set; }
-    }
-
+    public record UserProfileUpdateDTO(string Username, string? FirstName = default, string? LastName = default, string? Address = default, string? Phone = default, DateTime? BirthDate = default);
+    
 }

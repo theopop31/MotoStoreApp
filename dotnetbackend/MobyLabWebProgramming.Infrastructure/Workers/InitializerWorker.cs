@@ -45,7 +45,7 @@ public class InitializerWorker : BackgroundService
                 await userService.AddUser(new()
                 {
                     Email = "admin@default.com",
-                    Name = "Admin",
+                    Username = "Admin",
                     Role = UserRoleEnum.Admin,
                     Password = PasswordUtils.HashPassword("default")
 

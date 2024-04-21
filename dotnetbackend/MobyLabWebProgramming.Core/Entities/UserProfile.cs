@@ -1,7 +1,7 @@
 ﻿namespace MobyLabWebProgramming.Core.Entities;
 
 /// <summary>
-/// This is an example for another entity to store files and an example for a One-To-Many relation.
+/// This is an example for another entity to store user profile info and an example for a One-To-One relation.
 /// </summary>
 public class UserProfile : BaseEntity
 {

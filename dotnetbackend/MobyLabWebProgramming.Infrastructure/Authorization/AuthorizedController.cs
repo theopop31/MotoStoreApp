@@ -13,8 +13,10 @@ public abstract class AuthorizedController : ControllerBase
 {
     private UserClaims? _userClaims;
     protected readonly IUserService UserService;
+    protected readonly IUserProfileService UserProfileService;
 
     protected AuthorizedController(IUserService userService) => UserService = userService;
+    protected AuthorizedController(IUserProfileService userProfileService) => UserProfileService = userProfileService;
 
     /// <summary>
     /// This method extracts the claims from the JWT into an object.

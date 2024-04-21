@@ -94,8 +94,23 @@ public sealed class Repository<TDb> : IRepository<TDb> where TDb : DbContext
 
     public async Task<int> DeleteAsync<T>(Guid id, CancellationToken cancellationToken = default) where T : BaseEntity
     {
+        Console.WriteLine(id);
         var entity = await GetAsync<T>(id, cancellationToken); // Get the entity.
+        if (entity == null)
+        {
+            return 0;
+        }
 
+        DbContext.Remove(entity); // And remove it.
+
+        return await DbContext.SaveChangesAsync(cancellationToken); // Save the changes.
+    }
+
+
+    public async Task<int> DeleteAsyncUserFile<T>(Guid UserId, CancellationToken cancellationToken = default) where T : BaseEntity
+    {
+        
+        var entity = await DbContext.Set<T>().FindAsync(new object[] { UserId }, cancellationToken); // Get the entity.
         if (entity == null)
         {
             return 0;

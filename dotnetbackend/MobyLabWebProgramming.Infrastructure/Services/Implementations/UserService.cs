@@ -63,7 +63,7 @@ public class UserService : IUserService
         {
             Id = result.Id,
             Email = result.Email,
-            Name = result.Username,
+            Username = result.Username,
             Role = result.Role
         };
 
@@ -94,12 +94,12 @@ public class UserService : IUserService
         await _repository.AddAsync(new User
         {
             Email = user.Email,
-            Username = user.Name,
+            Username = user.Username,
             Role = user.Role,
             PasswordHash = user.Password
         }, cancellationToken); // A new entity is created and persisted in the database.
 
-        await _mailService.SendMail(user.Email, "Welcome!", MailTemplates.UserAddTemplate(user.Name), true, "My App", cancellationToken); // You can send a notification on the user email. Change the email if you want.
+        await _mailService.SendMail(user.Email, "Welcome!", MailTemplates.UserAddTemplate(user.Username), true, "My App", cancellationToken); // You can send a notification on the user email. Change the email if you want.
 
         return ServiceResponse.ForSuccess();
     }
@@ -115,7 +115,7 @@ public class UserService : IUserService
 
         if (entity != null) // Verify if the user is not found, you cannot update an non-existing entity.
         {
-            entity.Username = user.Name ?? entity.Username;
+            entity.Username = user.Username ?? entity.Username;
             entity.PasswordHash = user.Password ?? entity.PasswordHash;
 
             await _repository.UpdateAsync(entity, cancellationToken); // Update the entity and persist the changes.

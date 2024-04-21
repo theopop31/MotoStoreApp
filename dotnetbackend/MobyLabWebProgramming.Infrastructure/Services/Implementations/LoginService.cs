@@ -27,7 +27,7 @@ public class LoginService : ILoginService
             Subject = new(new[] { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) }), // Set the user ID as the "nameid" claim in the JWT.
             Claims = new Dictionary<string, object> // Add any other claims in the JWT, you can even add custom claims if you want.
             {
-                { ClaimTypes.Name, user.Name },
+                { ClaimTypes.Name, user.Username },
                 { ClaimTypes.Email, user.Email }
             },
             IssuedAt = issuedAt, // This sets the "iat" claim to indicate then the JWT was emitted.

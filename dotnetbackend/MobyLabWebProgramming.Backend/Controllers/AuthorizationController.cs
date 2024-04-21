@@ -19,7 +19,10 @@ public class AuthorizationController : ControllerBase // The controller must inh
     /// <summary>
     /// Inject the required services through the constructor.
     /// </summary>
-    public AuthorizationController(IUserService userService) => _userService = userService;
+    public AuthorizationController(IUserService userService)
+    {
+        _userService = userService;
+    }
 
     /// <summary>
     /// This method will respond to login requests.

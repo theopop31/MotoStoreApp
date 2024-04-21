@@ -1,5 +1,6 @@
 ﻿using Ardalis.EFCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using MobyLabWebProgramming.Core.Entities;
 using SmartEnum.EFCore;
 
 namespace MobyLabWebProgramming.Infrastructure.Database;

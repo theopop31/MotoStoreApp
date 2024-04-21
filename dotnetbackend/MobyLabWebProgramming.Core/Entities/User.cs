@@ -1,4 +1,5 @@
 ﻿using MobyLabWebProgramming.Core.Enums;
+using MobyLabWebProgramming.Core.Specifications;
 
 namespace MobyLabWebProgramming.Core.Entities;
 
@@ -14,4 +15,9 @@ public class User : BaseEntity
 
     // Navigation property to represent the one-to-many relationship with Orders
     public ICollection<Order> Orders { get; set; } = new HashSet<Order>();
+
+    public static implicit operator User(UserByUsernameSpec v)
+    {
+        throw new NotImplementedException();
+    }
 }
