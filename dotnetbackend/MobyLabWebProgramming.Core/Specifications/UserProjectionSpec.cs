@@ -19,7 +19,7 @@ public sealed class UserProjectionSpec : BaseSpec<UserProjectionSpec, User, User
     {
         Id = e.Id,
         Email = e.Email,
-        Name = e.Username,
+        Username = e.Username,
         Role = e.Role
     };
 

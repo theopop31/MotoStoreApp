@@ -19,7 +19,7 @@ public class FileRepository : IFileRepository
             Directory.CreateDirectory(path);
         }
     }
-
+    
     /// <summary>
     /// This gets a new unique filename.
     /// When managing files the filename on your filesystem should be one decided by the application to avoid security issues and avoid overriding the files by requesting a unique filename.

@@ -48,6 +48,7 @@ public class InitializerWorker : BackgroundService
                     Name = "Admin",
                     Role = UserRoleEnum.Admin,
                     Password = PasswordUtils.HashPassword("default")
+
                 }, cancellationToken: cancellationToken);
             }
         }

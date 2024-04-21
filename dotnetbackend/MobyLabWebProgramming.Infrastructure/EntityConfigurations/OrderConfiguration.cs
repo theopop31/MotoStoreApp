@@ -25,7 +25,7 @@ namespace MobyLabWebProgramming.Infrastructure.EntityConfigurations
 
             builder.Property(o => o.OrderDate)
                 .IsRequired()
-                .HasColumnType("datetime");
+                .HasColumnType("timestamp without time zone");
 
             builder.Property(o => o.Status)
                 .IsRequired()

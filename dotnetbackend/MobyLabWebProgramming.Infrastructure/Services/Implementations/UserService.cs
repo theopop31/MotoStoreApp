@@ -54,7 +54,7 @@ public class UserService : IUserService
             return ServiceResponse<LoginResponseDTO>.FromError(CommonErrors.UserNotFound); // Pack the proper error as the response.
         }
 
-        if (result.Password != login.Password) // Verify if the password hash of the request is the same as the one in the database.
+        if (result.PasswordHash != login.Password) // Verify if the password hash of the request is the same as the one in the database.
         {
             return ServiceResponse<LoginResponseDTO>.FromError(new(HttpStatusCode.BadRequest, "Wrong password!", ErrorCodes.WrongPassword));
         }
@@ -63,7 +63,7 @@ public class UserService : IUserService
         {
             Id = result.Id,
             Email = result.Email,
-            Name = result.Name,
+            Name = result.Username,
             Role = result.Role
         };
 
@@ -94,9 +94,9 @@ public class UserService : IUserService
         await _repository.AddAsync(new User
         {
             Email = user.Email,
-            Name = user.Name,
+            Username = user.Name,
             Role = user.Role,
-            Password = user.Password
+            PasswordHash = user.Password
         }, cancellationToken); // A new entity is created and persisted in the database.
 
         await _mailService.SendMail(user.Email, "Welcome!", MailTemplates.UserAddTemplate(user.Name), true, "My App", cancellationToken); // You can send a notification on the user email. Change the email if you want.
@@ -115,8 +115,8 @@ public class UserService : IUserService
 
         if (entity != null) // Verify if the user is not found, you cannot update an non-existing entity.
         {
-            entity.Name = user.Name ?? entity.Name;
-            entity.Password = user.Password ?? entity.Password;
+            entity.Username = user.Name ?? entity.Username;
+            entity.PasswordHash = user.Password ?? entity.PasswordHash;
 
             await _repository.UpdateAsync(entity, cancellationToken); // Update the entity and persist the changes.
         }
