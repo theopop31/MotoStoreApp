@@ -10,6 +10,8 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 /// </summary>
 public interface IUserService
 {
+
+    public Task<UserDTO?> GetUserByUsernameAsync(string username);
     /// <summary>
     /// GetUser will provide the information about a user given its user Id.
     /// </summary>

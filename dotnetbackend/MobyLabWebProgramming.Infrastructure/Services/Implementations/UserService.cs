@@ -29,6 +29,22 @@ public class UserService : IUserService
         _mailService = mailService;
     }
 
+    public async Task<UserDTO?> GetUserByUsernameAsync(string username)
+    {
+        var spec = new UserByUsernameSpec(username);
+        var user = await _repository.GetAsync(spec);
+
+        if (user == null)
+            return null;
+
+        return new UserDTO
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Role = (UserRoleEnum)user.Role  // Assuming the role is stored as an enum and needs conversion
+        };
+    }
+
     public async Task<ServiceResponse<UserDTO>> GetUser(Guid id, CancellationToken cancellationToken = default)
     {
         var result = await _repository.GetAsync(new UserProjectionSpec(id), cancellationToken); // Get a user using a specification on the repository.

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Infrastructure.Authorization;
+using MobyLabWebProgramming.Infrastructure.Services.Implementations;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 
 namespace MobyLabWebProgramming.Backend.Controllers;
@@ -12,10 +13,23 @@ namespace MobyLabWebProgramming.Backend.Controllers;
 public class UserProfileController : ControllerBase
 {
     private readonly IUserProfileService _userProfileService;
+    private readonly IUserService _userService;
 
-    public UserProfileController(IUserProfileService userProfileService)
+    public UserProfileController(IUserProfileService userProfileService, IUserService userService)
     {
         _userProfileService = userProfileService;
+        _userService = userService;
+    }
+
+    private async Task<UserDTO?> GetUserDTO()
+    {
+        var username = User.Identity?.Name;
+        if (username == null)
+        {
+            return null;
+        }
+
+        return await _userService.GetUserByUsernameAsync(username);
     }
 
     [Authorize]
@@ -29,12 +43,9 @@ public class UserProfileController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<UserProfileDTO>>> Add([FromBody] UserProfileAddDTO userProfileDto)
     {
-        var requestingUsername = User.Identity?.Name;
-        if (requestingUsername == null)
+        var requestingUser = await GetUserDTO();
+        if (requestingUser == null)
             return Unauthorized("Requesting user identity not found.");
-
-        // Assume you have a method to fetch the UserDTO from the username, potentially caching it if needed
-        var requestingUser = new UserDTO { Username = requestingUsername, Id = Guid.NewGuid() }; // Example UserDTO creation, fetch actual data as necessary
 
         var response = await _userProfileService.AddUserProfileAsync(userProfileDto, requestingUser);
 
