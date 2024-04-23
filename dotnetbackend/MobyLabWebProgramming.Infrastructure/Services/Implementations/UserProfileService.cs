@@ -1,6 +1,7 @@
 ﻿using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
 using MobyLabWebProgramming.Core.Enums;
+using MobyLabWebProgramming.Core.Errors;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Core.Specifications;
 using MobyLabWebProgramming.Infrastructure.Database;
@@ -79,7 +80,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
 
             if (requestingUsername != userProfileDto.Username)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only owner can update profile."));
+                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only owner can update profile.", ErrorCodes.NotEnoughPermissions));
             }
 
             var spec = new UserProfileByUsernameSpec(userProfileDto.Username);
@@ -110,7 +111,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             Console.WriteLine(requestingUsername);
             if (requestingUsername != username)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only owner can delete profile."));
+                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only owner can delete profile.", ErrorCodes.NotEnoughPermissions));
             }
 
             var spec = new UserProfileByUsernameSpec(username);

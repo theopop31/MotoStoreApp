@@ -6,10 +6,5 @@ using System.Threading.Tasks;
 
 namespace MobyLabWebProgramming.Core.DataTransferObjects
 {
-    public class OrderUpdateDTO
-    {
-        public Guid Id { get; set; }
-        public string Status { get; set; }
-        public List<OrderDetailUpdateDTO> Details { get; set; } = new List<OrderDetailUpdateDTO>();
-    }
+     public record OrderUpdateDTO(Guid id, string? Status = default) { }
 }

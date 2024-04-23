@@ -25,9 +25,8 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             _repository = repository;
         }
 
-        public async Task<ServiceResponse> AddProducerAsync(ProducerAddDTO producerDto, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+        public async Task<ServiceResponse> AddProducerAsync(ProducerAddDTO producerDto, UserDTO requestingUser, CancellationToken cancellationToken = default)
         {
-
             if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Producer)
             {
                 return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or producer permissions!", ErrorCodes.CannotAdd));
@@ -50,11 +49,11 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             return ServiceResponse.ForSuccess();
         }
 
-        public async Task<ServiceResponse> UpdateProducerAsync(ProducerUpdateDTO producerDto, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+        public async Task<ServiceResponse> UpdateProducerAsync(ProducerUpdateDTO producerDto, UserDTO requestingUser, CancellationToken cancellationToken = default)
         {
             if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Producer)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or producer permissions!", ErrorCodes.CannotUpdate));
+                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or producer permissions!", ErrorCodes.NotEnoughPermissions));
             }
 
             var result = await _repository.GetAsync(new ProducerSpec(producerDto.Id), cancellationToken);
@@ -71,12 +70,11 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             return ServiceResponse.ForSuccess();
         }
 
-        public async Task<ServiceResponse> DeleteProducerAsync(Guid producerId, UserDTO? requestingUser, CancellationToken cancellationToken = default)
+        public async Task<ServiceResponse> DeleteProducerAsync(Guid producerId, UserDTO requestingUser, CancellationToken cancellationToken = default)
         {
-
             if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Producer)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin permissions!", ErrorCodes.CannotDelete));
+                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin permissions!", ErrorCodes.NotEnoughPermissions));
             }
 
             await _repository.DeleteAsync<Producer>(producerId, cancellationToken);
@@ -86,8 +84,6 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
 
         public async Task<ServiceResponse<ProducerDTO>> GetProducerByIdAsync(Guid producerId, CancellationToken cancellationToken = default)
         {
-            
-
             var producer = await _repository.GetAsync(new ProducerProjectionSpec(producerId), cancellationToken);
             if (producer == null)
             {

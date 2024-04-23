@@ -8,7 +8,7 @@ namespace MobyLabWebProgramming.Core.DataTransferObjects
 {
     public class OrderAddDTO
     {
-        public Guid UserId { get; set; }
-        public List<OrderDetailAddDTO> Details { get; set; } = new List<OrderDetailAddDTO>();
+        public string Status { get; set; } = default!;
+        public DateTime OrderDate { get; set; }
     }
 }

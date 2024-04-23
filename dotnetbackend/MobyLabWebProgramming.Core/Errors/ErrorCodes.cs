@@ -18,5 +18,6 @@ public enum ErrorCodes
     CannotUpdate,
     CannotDelete,
     MailSendFailed,
-    ProducerAlreadyExists
+    ProducerAlreadyExists,
+    NotEnoughPermissions
 }

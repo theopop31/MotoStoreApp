@@ -5,22 +5,19 @@ using MobyLabWebProgramming.Core.Entities;
 using MobyLabWebProgramming.Core.Enums;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
-using MobyLabWebProgramming.Infrastructure.Authorization;
-using MobyLabWebProgramming.Infrastructure.Extensions;
-using MobyLabWebProgramming.Infrastructure.Services.Implementations;
 
 namespace MobyLabWebProgramming.Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class ProducerController : ControllerBase
+    public class OrderController : ControllerBase
     {
-        private readonly IProducerService _producerService;
+        private readonly IOrderService _orderService;
         private readonly IUserService _userService;
 
-        public ProducerController(IProducerService producerService, IUserService userService)
+        public OrderController(IOrderService orderService, IUserService userService)
         {
-            _producerService = producerService;
+            _orderService = orderService;
             _userService = userService;
         }
 
@@ -37,35 +34,33 @@ namespace MobyLabWebProgramming.Backend.Controllers
 
         [Authorize]
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<ServiceResponse<ProducerDTO>>> GetById(Guid id)
+        public async Task<ActionResult<ServiceResponse<OrderDTO>>> GetById(Guid id)
         {
-            var response = await _producerService.GetProducerByIdAsync(id);
-
+            var response = await _orderService.GetOrderByIdAsync(id);
             return Ok(response);
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse>> Add([FromBody] ProducerAddDTO producerDto)
-        {
-            var requestingUsername = await GetUserDTO(); 
-            if (requestingUsername == null)
-                return Unauthorized("User must be logged in to perform this action.");
-
-            var response = await _producerService.AddProducerAsync(producerDto, requestingUsername);
-
-            return Ok(response);
-        }
-
-        [Authorize]
-        [HttpPut]
-        public async Task<ActionResult<ServiceResponse>> Update([FromBody] ProducerUpdateDTO producerDto)
+        public async Task<ActionResult<ServiceResponse>> Add([FromBody] OrderAddDTO orderDto)
         {
             var requestingUser = await GetUserDTO();
             if (requestingUser == null)
                 return Unauthorized("User must be logged in to perform this action.");
 
-            var response = await _producerService.UpdateProducerAsync(producerDto, requestingUser);
+            var response = await _orderService.AddOrderAsync(orderDto, requestingUser);
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<ActionResult<ServiceResponse>> Update([FromBody] OrderUpdateDTO orderDto)
+        {
+            var requestingUser = await GetUserDTO();
+            if (requestingUser == null)
+                return Unauthorized("User must be logged in to perform this action.");
+
+            var response = await _orderService.UpdateOrderAsync(orderDto, requestingUser);
             return Ok(response);
         }
 
@@ -77,9 +72,8 @@ namespace MobyLabWebProgramming.Backend.Controllers
             if (requestingUser == null)
                 return Unauthorized("User must be logged in to perform this action.");
 
-            var response = await _producerService.DeleteProducerAsync(id, requestingUser);
+            var response = await _orderService.DeleteOrderAsync(id, requestingUser);
             return Ok(response);
         }
-
     }
 }

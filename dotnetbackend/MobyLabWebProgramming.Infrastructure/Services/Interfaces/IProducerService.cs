@@ -10,9 +10,9 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Interfaces
 {
     public interface IProducerService
     {
-        Task<ServiceResponse> AddProducerAsync(ProducerAddDTO producerDto, UserDTO? requestingUser, CancellationToken cancellationToken = default);
-        Task<ServiceResponse> UpdateProducerAsync(ProducerUpdateDTO producerDto, UserDTO? requestingUser, CancellationToken cancellationToken = default);
-        Task<ServiceResponse> DeleteProducerAsync(Guid producerId, UserDTO? requestingUser, CancellationToken cancellationToken = default);
+        Task<ServiceResponse> AddProducerAsync(ProducerAddDTO producerDto, UserDTO requestingUser, CancellationToken cancellationToken = default);
+        Task<ServiceResponse> UpdateProducerAsync(ProducerUpdateDTO producerDto, UserDTO requestingUser, CancellationToken cancellationToken = default);
+        Task<ServiceResponse> DeleteProducerAsync(Guid producerId, UserDTO requestingUser, CancellationToken cancellationToken = default);
         Task<ServiceResponse<ProducerDTO>> GetProducerByIdAsync(Guid producerId, CancellationToken cancellationToken = default);
     }
 }
