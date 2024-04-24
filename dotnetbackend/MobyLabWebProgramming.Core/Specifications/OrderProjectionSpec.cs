@@ -1,4 +1,6 @@
-﻿using MobyLabWebProgramming.Core.DataTransferObjects;
+﻿using Ardalis.Specification;
+using Microsoft.EntityFrameworkCore;
+using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -16,14 +18,13 @@ namespace MobyLabWebProgramming.Core.Specifications
             Id = order.Id,
             OrderDate = order.OrderDate,
             Status = order.Status,
-            Username = order.User.Username, // Assuming the User navigation property is correctly configured
+            Username = order.User.Username, 
             OrderDetails = order.OrderDetails.Select(detail => new OrderDetailDTO
             {
                 ProductId = detail.Id,
-                ProductName = detail.Product.Name, // Assuming the Product navigation property is available
+                ProductName = detail.Product.Name,
                 Quantity = detail.Quantity,
                 UnitPrice = detail.UnitPrice
-                // Map other necessary properties
             }).ToList()
         };
 
@@ -31,6 +32,18 @@ namespace MobyLabWebProgramming.Core.Specifications
         {
         }
 
-        // Add additional constructors for different filtering needs
+        public OrderProjectionSpec(string search)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+            {
+                throw new ArgumentException("Search parameter must not be empty.", nameof(search));
+            }
+
+            var searchPattern = $"%{search.Trim().Replace(" ", "%")}%";
+
+            Query
+                .Include(order => order.User)
+                .Where(order => EF.Functions.ILike(order.User.Username, searchPattern));
+        }
     }
 }

@@ -2,6 +2,7 @@
 using MobyLabWebProgramming.Core.Entities;
 using MobyLabWebProgramming.Core.Enums;
 using MobyLabWebProgramming.Core.Errors;
+using MobyLabWebProgramming.Core.Requests;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Core.Specifications;
 using MobyLabWebProgramming.Infrastructure.Database;
@@ -83,6 +84,13 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             }
 
             return ServiceResponse<OrderDTO>.ForSuccess(order);
+        }
+
+        public async Task<ServiceResponse<PagedResponse<OrderDTO>>> GetOrdersByUsername(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default)
+        {
+            var result = await _repository.PageAsync(pagination, new OrderProjectionSpec(pagination.Search), cancellationToken);
+
+            return ServiceResponse<PagedResponse<OrderDTO>>.ForSuccess(result);
         }
 
     }

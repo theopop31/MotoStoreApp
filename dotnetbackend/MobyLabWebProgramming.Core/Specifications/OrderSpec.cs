@@ -1,5 +1,6 @@
 ﻿using Ardalis.Specification;
 using MobyLabWebProgramming.Core.Entities;
+using MobyLabWebProgramming.Core.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;

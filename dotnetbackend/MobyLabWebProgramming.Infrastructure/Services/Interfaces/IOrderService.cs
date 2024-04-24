@@ -1,4 +1,5 @@
 ﻿using MobyLabWebProgramming.Core.DataTransferObjects;
+using MobyLabWebProgramming.Core.Requests;
 using MobyLabWebProgramming.Core.Responses;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Interfaces
         Task<ServiceResponse> UpdateOrderAsync(OrderUpdateDTO orderDTO, UserDTO requestingUser, CancellationToken cancellationToken = default);
         Task<ServiceResponse> DeleteOrderAsync(Guid orderId, UserDTO requestingUser, CancellationToken cancellationToken = default);
         Task<ServiceResponse<OrderDTO>> GetOrderByIdAsync(Guid orderId, CancellationToken cancellationToken = default);
+        Task<ServiceResponse<PagedResponse<OrderDTO>>> GetOrdersByUsername(PaginationSearchQueryParams pagination, CancellationToken cancellationToken = default);
 
     }
 }
