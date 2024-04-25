@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ardalis.Specification;
 
 namespace MobyLabWebProgramming.Core.Specifications
 {
@@ -23,13 +24,13 @@ namespace MobyLabWebProgramming.Core.Specifications
                 Description = product.Description,
                 Price = (decimal)product.Price,
                 Stock = (decimal)product.Stock,
+                ProducerName = product.Name,
                 /*Categories = product.Categories.Select(category => new ProductCategoryDTO
                 {
                     Id = category.Id,
                     CategoryName = category.CategoryName
                     // Additional category mappings if necessary
                 }).ToList()*/
-                // Not mapping Producer inside ProductDTO to avoid recursion
             }).ToList()
         };
 

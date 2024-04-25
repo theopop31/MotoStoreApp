@@ -104,7 +104,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
                 return ServiceResponse.FromError(CommonErrors.BadOrderId);
             }
 
-            await _repository.DeleteAsync<Order>(orderDetailId, cancellationToken);
+            await _repository.DeleteAsync<OrderDetail>(orderDetailId, cancellationToken);
             return ServiceResponse.ForSuccess();
 
         }

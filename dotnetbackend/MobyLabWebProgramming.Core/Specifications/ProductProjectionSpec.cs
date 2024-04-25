@@ -36,10 +36,6 @@ namespace MobyLabWebProgramming.Core.Specifications
 
         public ProductProjectionSpec(Guid id) : base(id)
         {
-            /*Query
-                .Include(p => p.Producer)
-                .Include(p => p.Categories)
-                .Include(p => p.OrderDetails).ThenInclude(od => od.Order);*/ // Include necessary navigation properties
         }
 
         public ProductProjectionSpec(string search)
