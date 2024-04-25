@@ -4,6 +4,7 @@ using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Infrastructure.Services.Implementations;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
+using System.Net;
 
 namespace MobyLabWebProgramming.Backend.Controllers
 {
@@ -30,7 +31,7 @@ namespace MobyLabWebProgramming.Backend.Controllers
             return await _userService.GetUserByUsernameAsync(username);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Personnel, Client")]
         [HttpPost]
         public async Task<ActionResult<ServiceResponse>> Add([FromBody] OrderDetailAddDTO orderDetailDto)
         {
@@ -38,10 +39,19 @@ namespace MobyLabWebProgramming.Backend.Controllers
             if (requestingUser == null)
                 return Unauthorized("User must be logged in to perform this action.");
             var response = await _orderDetailService.AddOrderDetailAsync(orderDetailDto, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Personnel")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<ServiceResponse>> Delete(Guid id)
         {
@@ -50,7 +60,16 @@ namespace MobyLabWebProgramming.Backend.Controllers
                 return Unauthorized("User must be logged in to perform this action.");
 
             var response = await _orderDetailService.DeleteOrderDetailAsync(id, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
     }

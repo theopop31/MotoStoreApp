@@ -5,6 +5,7 @@ using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Infrastructure.Authorization;
 using MobyLabWebProgramming.Infrastructure.Services.Implementations;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
+using System.Net;
 
 namespace MobyLabWebProgramming.Backend.Controllers;
 
@@ -32,14 +33,24 @@ public class UserProfileController : ControllerBase
         return await _userService.GetUserByUsernameAsync(username);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Client, Personnel, Producer, Admin")]
     [HttpGet("{username}")]
     public async Task<ActionResult<ServiceResponse<UserProfileDTO>>> GetByUsername(string username)
     {
-        return Ok(await _userProfileService.GetUserProfile(username));
+        var response = await _userProfileService.GetUserProfile(username);
+       if (response.IsOk)
+            return Ok(response);
+        else
+            switch (response.Error.Status)
+            {
+                case HttpStatusCode.NotFound: return NotFound(response);
+                case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                case HttpStatusCode.Conflict: return Conflict(response);
+                default: return BadRequest(response);
+            }
     }
 
-    [Authorize]
+    [Authorize(Roles = "Client, Admin")]
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<UserProfileDTO>>> Add([FromBody] UserProfileAddDTO userProfileDto)
     {
@@ -49,10 +60,19 @@ public class UserProfileController : ControllerBase
 
         var response = await _userProfileService.AddUserProfileAsync(userProfileDto, requestingUser);
 
-        return Ok(response);
+        if (response.IsOk)
+            return Ok(response);
+        else
+            switch (response.Error.Status)
+            {
+                case HttpStatusCode.NotFound: return NotFound(response);
+                case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                case HttpStatusCode.Conflict: return Conflict(response);
+                default: return BadRequest(response);
+            }
     }
 
-    [Authorize]
+    [Authorize(Roles = "Client, Admin")]
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<UserProfileDTO>>> Update([FromBody] UserProfileUpdateDTO userProfileDto)
     {
@@ -60,10 +80,20 @@ public class UserProfileController : ControllerBase
         if (requestingUsername == null)
             return Unauthorized("Requesting user identity not found.");
 
-        return Ok(await _userProfileService.UpdateUserProfileAsync(userProfileDto, requestingUsername));
+        var response = await _userProfileService.UpdateUserProfileAsync(userProfileDto, requestingUsername);
+        if (response.IsOk)
+            return Ok(response);
+        else
+            switch (response.Error.Status)
+            {
+                case HttpStatusCode.NotFound: return NotFound(response);
+                case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                case HttpStatusCode.Conflict: return Conflict(response);
+                default: return BadRequest(response);
+            }
     }
 
-    [Authorize]
+    [Authorize(Roles = "Client, Admin")]
     [HttpDelete("{username}")]
     public async Task<ActionResult<ServiceResponse>> Delete(string username)
     {
@@ -71,6 +101,16 @@ public class UserProfileController : ControllerBase
         if (requestingUsername == null)
             return Unauthorized("Requesting user identity not found.");
 
-        return Ok(await _userProfileService.DeleteUserProfileAsync(username, requestingUsername));
+        var response = await _userProfileService.DeleteUserProfileAsync(username, requestingUsername);
+        if (response.IsOk)
+            return Ok(response);
+        else
+            switch (response.Error.Status)
+            {
+                case HttpStatusCode.NotFound: return NotFound(response);
+                case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                case HttpStatusCode.Conflict: return Conflict(response);
+                default: return BadRequest(response);
+            }
     }
 }

@@ -8,6 +8,7 @@ using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
 using MobyLabWebProgramming.Infrastructure.Authorization;
 using MobyLabWebProgramming.Infrastructure.Extensions;
 using MobyLabWebProgramming.Infrastructure.Services.Implementations;
+using System.Net;
 
 namespace MobyLabWebProgramming.Backend.Controllers
 {
@@ -41,10 +42,19 @@ namespace MobyLabWebProgramming.Backend.Controllers
         {
             var response = await _producerService.GetProducerByIdAsync(id);
 
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Producer")]
         [HttpPost]
         public async Task<ActionResult<ServiceResponse>> Add([FromBody] ProducerAddDTO producerDto)
         {
@@ -54,10 +64,19 @@ namespace MobyLabWebProgramming.Backend.Controllers
 
             var response = await _producerService.AddProducerAsync(producerDto, requestingUsername);
 
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Producer")]
         [HttpPut]
         public async Task<ActionResult<ServiceResponse>> Update([FromBody] ProducerUpdateDTO producerDto)
         {
@@ -66,10 +85,19 @@ namespace MobyLabWebProgramming.Backend.Controllers
                 return Unauthorized("User must be logged in to perform this action.");
 
             var response = await _producerService.UpdateProducerAsync(producerDto, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Producer")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<ServiceResponse>> Delete(Guid id)
         {
@@ -78,7 +106,16 @@ namespace MobyLabWebProgramming.Backend.Controllers
                 return Unauthorized("User must be logged in to perform this action.");
 
             var response = await _producerService.DeleteProducerAsync(id, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
     }

@@ -5,6 +5,7 @@ using MobyLabWebProgramming.Core.Requests;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Infrastructure.Services.Implementations;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
+using System.Net;
 
 namespace MobyLabWebProgramming.Backend.Controllers
 {
@@ -32,7 +33,7 @@ namespace MobyLabWebProgramming.Backend.Controllers
             return await _userService.GetUserByUsernameAsync(username);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Producer, Admin")]
         [HttpPost]
         public async Task<ActionResult<ServiceResponse>> AddProduct([FromBody] ProductAddDTO productDto)
         {
@@ -40,10 +41,19 @@ namespace MobyLabWebProgramming.Backend.Controllers
             if (requestingUser == null)
                 return Unauthorized("User must be logged in to perform this action.");
             var response = await _productService.AddProductAsync(productDto, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Producer, Admin")]
         [HttpPut]
         public async Task<ActionResult<ServiceResponse>> UpdateProduct([FromBody] ProductUpdateDTO productDto)
         {
@@ -52,10 +62,19 @@ namespace MobyLabWebProgramming.Backend.Controllers
                 return Unauthorized("User must be logged in to perform this action.");
 
             var response = await _productService.UpdateProductAsync(productDto, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Producer, Admin")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<ServiceResponse>> DeleteProduct(Guid productId)
         {
@@ -64,7 +83,16 @@ namespace MobyLabWebProgramming.Backend.Controllers
                 return Unauthorized("User must be logged in to perform this action.");
 
             var response = await _productService.DeleteProductAsync(productId, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
         [Authorize]
@@ -72,7 +100,16 @@ namespace MobyLabWebProgramming.Backend.Controllers
         public async Task<ActionResult<ServiceResponse<ProductDTO>>> GetProductById(Guid id)
         {
             var response = await _productService.GetProductByIdAsync(id);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
         [Authorize]
@@ -81,7 +118,16 @@ namespace MobyLabWebProgramming.Backend.Controllers
                                                                                                                                                     // the PaginationSearchQueryParams properties to the object in the method parameter.
         {
             var response = await _productService.GetProductsByProducer(pagination);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
     }

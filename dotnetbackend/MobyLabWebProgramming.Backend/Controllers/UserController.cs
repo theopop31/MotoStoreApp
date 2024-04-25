@@ -57,7 +57,7 @@ public class UserController : AuthorizedController // Here we use the Authorized
     /// <summary>
     /// This method implements the Create operation (C from CRUD) of a user. 
     /// </summary>
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost] // This attribute will make the controller respond to a HTTP POST request on the route /api/User/Add.
     public async Task<ActionResult<RequestResponse>> Add([FromBody] UserAddDTO user)
     {
@@ -72,7 +72,7 @@ public class UserController : AuthorizedController // Here we use the Authorized
     /// <summary>
     /// This method implements the Update operation (U from CRUD) on a user. 
     /// </summary>
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut] // This attribute will make the controller respond to a HTTP PUT request on the route /api/User/Update.
     public async Task<ActionResult<RequestResponse>> Update([FromBody] UserUpdateDTO user) // The FromBody attribute indicates that the parameter is deserialized from the JSON body.
     {
@@ -90,7 +90,7 @@ public class UserController : AuthorizedController // Here we use the Authorized
     /// This method implements the Delete operation (D from CRUD) on a user.
     /// Note that in the HTTP RFC you cannot have a body for DELETE operations.
     /// </summary>
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")] // This attribute will make the controller respond to a HTTP DELETE request on the route /api/User/Delete/<some_guid>.
     public async Task<ActionResult<RequestResponse>> Delete([FromRoute] Guid id) // The FromRoute attribute will bind the id from the route to this parameter.
     {

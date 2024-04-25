@@ -24,19 +24,19 @@ namespace MobyLabWebProgramming.Infrastructure.EntityConfigurations
             // Property Configurations
             builder.Property(pc => pc.CategoryName)
                 .IsRequired()
-                .HasMaxLength(100);  // Adjust the maximum length as necessary for your category names
+                .HasMaxLength(100);
 
             // Many-to-Many relationship with Product
             builder.HasMany(pc => pc.Products)
            .WithMany(p => p.Categories)
            .UsingEntity<Dictionary<string, object>>(
                "ProductCategoryMapping", // Define the join table name
-               right => right.HasOne<Product>().WithMany().HasForeignKey("ProductId"), // Correctly configure the relationship and foreign key for Product
-               left => left.HasOne<ProductCategory>().WithMany().HasForeignKey("CategoryId"), // Correctly configure the relationship and foreign key for ProductCategory
+               right => right.HasOne<Product>().WithMany().HasForeignKey("ProductId"), 
+               left => left.HasOne<ProductCategory>().WithMany().HasForeignKey("CategoryId"),
                joinEntity =>
                {
-                   joinEntity.ToTable("ProductCategoryMappings"); // Optionally, specify the join table name explicitly again
-                   joinEntity.HasKey(new string[] { "ProductId", "CategoryId" }); // Define composite key for the join table
+                   joinEntity.ToTable("ProductCategoryMappings"); 
+                   joinEntity.HasKey(new string[] { "ProductId", "CategoryId" });
                });
         }
     }

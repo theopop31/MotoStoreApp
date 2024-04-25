@@ -29,14 +29,14 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
         {
             if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Producer)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or producer permissions!", ErrorCodes.CannotAdd));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
 
             var result = await _repository.GetAsync(new ProducerSpec(producerDto.ProducerName), cancellationToken);
 
             if (result != null)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Conflict, "The producer already exists!", ErrorCodes.ProducerAlreadyExists));
+                return ServiceResponse.FromError(CommonErrors.ProducerAlreadyExists);
             }
             
             var producer = new Producer
@@ -53,14 +53,14 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
         {
             if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Producer)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or producer permissions!", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
 
             var result = await _repository.GetAsync(new ProducerSpec(producerDto.Id), cancellationToken);
 
             if (result == null)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "The producer doesn't exist!", ErrorCodes.EntityNotFound));
+                return ServiceResponse.FromError(CommonErrors.ProducerNotFound);
             }
 
             result.ProducerName = producerDto.ProducerName ?? result.ProducerName;
@@ -74,7 +74,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
         {
             if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Producer)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin permissions!", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
 
             await _repository.DeleteAsync<Producer>(producerId, cancellationToken);
@@ -87,7 +87,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var producer = await _repository.GetAsync(new ProducerProjectionSpec(producerId), cancellationToken);
             if (producer == null)
             {
-                return ServiceResponse<ProducerDTO>.FromError(new(HttpStatusCode.NotFound, "The producer doesn't exist!", ErrorCodes.EntityNotFound));
+                return ServiceResponse<ProducerDTO>.FromError(CommonErrors.ProducerNotFound);
             }
 
             return ServiceResponse<ProducerDTO>.ForSuccess(producer);

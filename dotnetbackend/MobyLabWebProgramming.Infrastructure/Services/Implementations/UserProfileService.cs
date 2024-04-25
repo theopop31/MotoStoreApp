@@ -61,7 +61,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
                 Address = userProfileDto.Address,
                 Phone = userProfileDto.Phone,
                 BirthDate = userProfileDto.BirthDate,
-                UserId = existingUser.Id,  // Link to the User's ID
+                UserId = existingUser.Id,
             };
 
             await _repository.AddAsync(userProfile, cancellationToken);
@@ -75,19 +75,19 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var requestingUser = await _repository.GetAsync(userSpec, cancellationToken);
             if (requestingUser == null)
             {
-                return ServiceResponse.FromError(new (HttpStatusCode.NotFound, "Requesting user does not exist."));
+                return ServiceResponse.FromError(CommonErrors.UserNotFound);
             }
 
-            if (requestingUsername != userProfileDto.Username)
+            if (requestingUsername != userProfileDto.Username || requestingUser.Role != UserRoleEnum.Admin)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only owner can update profile.", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
 
             var spec = new UserProfileByUsernameSpec(userProfileDto.Username);
             var userProfile = await _repository.GetAsync(spec, cancellationToken);
             if (userProfile == null)
             {
-                return ServiceResponse.FromError(new (HttpStatusCode.NotFound, "UserProfile not found."));
+                return ServiceResponse.FromError(CommonErrors.UserProfileNotFound);
             }
 
             userProfile.FirstName = userProfileDto.FirstName ?? userProfile.FirstName;
@@ -106,19 +106,19 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var requestingUser = await _repository.GetAsync(userSpec, cancellationToken);
             if (requestingUser == null)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Requesting user does not exist."));
+                return ServiceResponse.FromError(CommonErrors.UserNotFound);
             }
             Console.WriteLine(requestingUsername);
             if (requestingUsername != username)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "Only owner can delete profile.", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
 
             var spec = new UserProfileByUsernameSpec(username);
             var userProfile = await _repository.GetAsync(spec, cancellationToken);
             if (userProfile == null)
             {
-                return ServiceResponse.FromError(new (HttpStatusCode.NotFound, "UserProfile not found."));
+                return ServiceResponse.FromError(CommonErrors.UserProfileNotFound);
             }
             Console.WriteLine(userProfile.UserId);
             await _repository.DeleteAsyncUserFile<UserProfile>(userProfile.UserId, cancellationToken);

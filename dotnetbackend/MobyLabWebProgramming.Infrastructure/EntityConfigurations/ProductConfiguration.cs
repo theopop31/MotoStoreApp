@@ -39,8 +39,8 @@ namespace MobyLabWebProgramming.Infrastructure.EntityConfigurations
             // Producer (Many Products to One Producer)
             builder.HasOne(p => p.Producer)
                 .WithMany(pr => pr.Products)
-                .HasForeignKey(p => p.ProducerId) // This adds the ProducerId foreign key.
-                .OnDelete(DeleteBehavior.Cascade); // Configuring cascade delete if necessary, adjust according to business rules
+                .HasForeignKey(p => p.ProducerId)
+                .OnDelete(DeleteBehavior.Cascade); // Configuring cascade delete 
 
             // ProductCategory (Many-to-Many with ProductCategory)
             builder.HasMany(p => p.Categories)

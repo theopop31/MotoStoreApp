@@ -32,7 +32,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var existingUser = await _repository.GetAsync(userSpec, cancellationToken);
             if (existingUser == null)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Requesting user does not exist.", ErrorCodes.EntityNotFound));
+                return ServiceResponse.FromError(CommonErrors.UserNotFound);
             }
             var order = new Order
             {
@@ -51,34 +51,34 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
         {
             if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or personnel permissions!", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
             var existingOrder = await _repository.GetAsync(new OrderSpec(orderDTO.id), cancellationToken);
             if (existingOrder == null)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "The order doesn't exist!", ErrorCodes.EntityNotFound));
+                return ServiceResponse.FromError(CommonErrors.OrderNotFound);
             }
             existingOrder.Status = orderDTO.Status ?? existingOrder.Status;
             await _repository.UpdateAsync(existingOrder, cancellationToken);
 
-            return ServiceResponse<ServiceResponse>.ForSuccess();
+            return ServiceResponse.ForSuccess();
         }
 
         public async Task<ServiceResponse> DeleteOrderAsync(Guid orderId, UserDTO requestingUser, CancellationToken cancellationToken)
         {
             if (requestingUser != null && requestingUser.Role != UserRoleEnum.Admin && requestingUser.Role != UserRoleEnum.Personnel)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or personnel permissions!", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
 
             var existingOrder = await _repository.GetAsync(new OrderSpec(orderId), cancellationToken);
             if (existingOrder == null)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "The order doesn't exist!", ErrorCodes.EntityNotFound));
+                return ServiceResponse.FromError(CommonErrors.OrderNotFound);
             }
 
             await _repository.DeleteAsync<Order>(orderId, cancellationToken);
-            return ServiceResponse<ServiceResponse>.ForSuccess();
+            return ServiceResponse.ForSuccess();
         }
 
         public async Task<ServiceResponse<OrderDTO>> GetOrderByIdAsync(Guid orderId, CancellationToken cancellationToken)
@@ -86,7 +86,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var order = await _repository.GetAsync(new OrderProjectionSpec(orderId), cancellationToken);
             if (order == null)
             {
-                return ServiceResponse<OrderDTO>.FromError(new(HttpStatusCode.NotFound, "The order doesn't exist!", ErrorCodes.EntityNotFound));
+                return ServiceResponse<OrderDTO>.FromError(CommonErrors.OrderNotFound);
             }
 
             return ServiceResponse<OrderDTO>.ForSuccess(order);

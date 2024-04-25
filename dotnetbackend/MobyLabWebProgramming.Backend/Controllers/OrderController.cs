@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
 using MobyLabWebProgramming.Core.Enums;
+using MobyLabWebProgramming.Core.Errors;
 using MobyLabWebProgramming.Core.Requests;
 using MobyLabWebProgramming.Core.Responses;
 using MobyLabWebProgramming.Infrastructure.Extensions;
 using MobyLabWebProgramming.Infrastructure.Services.Implementations;
 using MobyLabWebProgramming.Infrastructure.Services.Interfaces;
+using System.Net;
 
 
 namespace MobyLabWebProgramming.Backend.Controllers
@@ -41,19 +43,36 @@ namespace MobyLabWebProgramming.Backend.Controllers
         public async Task<ActionResult<ServiceResponse<OrderDTO>>> GetById(Guid id)
         {
             var response = await _orderService.GetOrderByIdAsync(id);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
         [Authorize]
-        [HttpGet] // This attribute will make the controller respond to a HTTP GET request on the route /api/User/GetPage.
-        public async Task<ActionResult<RequestResponse<PagedResponse<OrderDTO>>>> GetUserOrders([FromQuery] PaginationSearchQueryParams pagination) // The FromQuery attribute will bind the parameters matching the names of
-                                                                                                                                             // the PaginationSearchQueryParams properties to the object in the method parameter.
+        [HttpGet]
+        public async Task<ActionResult<RequestResponse<PagedResponse<OrderDTO>>>> GetUserOrders([FromQuery] PaginationSearchQueryParams pagination)
         {
             var response = await _orderService.GetOrdersByUsername(pagination);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Personnel, Client")]
         [HttpPost]
         public async Task<ActionResult<ServiceResponse>> Add([FromBody] OrderAddDTO orderDto)
         {
@@ -62,10 +81,19 @@ namespace MobyLabWebProgramming.Backend.Controllers
                 return Unauthorized("User must be logged in to perform this action.");
 
             var response = await _orderService.AddOrderAsync(orderDto, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
-
-        [Authorize]
+         
+        [Authorize(Roles = "Admin, Personnel")]
         [HttpPut]
         public async Task<ActionResult<ServiceResponse>> Update([FromBody] OrderUpdateDTO orderDto)
         {
@@ -74,10 +102,19 @@ namespace MobyLabWebProgramming.Backend.Controllers
                 return Unauthorized("User must be logged in to perform this action.");
 
             var response = await _orderService.UpdateOrderAsync(orderDto, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin, Personnel")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<ServiceResponse>> Delete(Guid id)
         {
@@ -86,7 +123,16 @@ namespace MobyLabWebProgramming.Backend.Controllers
                 return Unauthorized("User must be logged in to perform this action.");
 
             var response = await _orderService.DeleteOrderAsync(id, requestingUser);
-            return Ok(response);
+            if (response.IsOk)
+                return Ok(response);
+            else
+                switch (response.Error.Status)
+                {
+                    case HttpStatusCode.NotFound: return NotFound(response);
+                    case HttpStatusCode.Unauthorized: return Unauthorized(response);
+                    case HttpStatusCode.Conflict: return Conflict(response);
+                    default: return BadRequest(response);
+                };
         }
     }
 }

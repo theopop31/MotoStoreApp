@@ -32,14 +32,14 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var existingUser = await _repository.GetAsync(userSpec, cancellationToken);
             if (existingUser != null && existingUser.Role != UserRoleEnum.Admin && existingUser.Role != UserRoleEnum.Producer)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or producer permissions!", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
 
             var producerSpec = new ProducerSpec(productDto.ProducerName);
             var producer = await _repository.GetAsync(producerSpec, cancellationToken);
             if (producer == null)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Producer not found.", ErrorCodes.EntityNotFound));
+                return ServiceResponse.FromError(CommonErrors.ProducerNotFound);
             }
 
             var product = new Product
@@ -62,13 +62,13 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var existingUser = await _repository.GetAsync(userSpec, cancellationToken);
             if (existingUser != null && existingUser.Role != UserRoleEnum.Admin && existingUser.Role != UserRoleEnum.Producer)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or producer permissions!", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
 
             var product = await _repository.GetAsync(new ProductSpec(productDto.id), cancellationToken);
             if (product == null)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "Product not found.", ErrorCodes.EntityNotFound));
+                return ServiceResponse.FromError(CommonErrors.ProductNotFound);
             }
 
             product.Name = productDto.Name ?? product.Name;
@@ -102,7 +102,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var existingUser = await _repository.GetAsync(userSpec, cancellationToken);
             if (existingUser != null && existingUser.Role != UserRoleEnum.Admin && existingUser.Role != UserRoleEnum.Producer)
             {
-                return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or producer permissions!", ErrorCodes.NotEnoughPermissions));
+                return ServiceResponse.FromError(CommonErrors.NoPermissions);
             }
             await _repository.DeleteAsync<Product>(productId, cancellationToken);
             return ServiceResponse.ForSuccess();
@@ -113,7 +113,7 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
             var product = await _repository.GetAsync(new ProductProjectionSpec(productId), cancellationToken);
             if (product == null)
             {
-                return ServiceResponse<ProductDTO>.FromError(new(HttpStatusCode.NotFound, "Product not found.", ErrorCodes.EntityNotFound));
+                return ServiceResponse<ProductDTO>.FromError(CommonErrors.ProductNotFound);
             }
 
             return ServiceResponse<ProductDTO>.ForSuccess(product);
