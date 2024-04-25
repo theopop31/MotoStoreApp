@@ -11,8 +11,8 @@ namespace MobyLabWebProgramming.Core.DataTransferObjects
         public string Name { get; set; } = default!;
         public string Description { get; set; } = default!;
         public decimal Price { get; set; }
-        public decimal Stock { get; set; }
-        public Guid? ProducerId { get; set; }
-        public List<Guid> CategoryIds { get; set; } = new List<Guid>();
+        public int Stock { get; set; }
+        public string ProducerName { get; set; }
+        // public List<string> Categories { get; set; } = new List<string>();
     }
 }

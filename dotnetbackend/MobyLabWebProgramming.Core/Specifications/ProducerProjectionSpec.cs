@@ -23,12 +23,12 @@ namespace MobyLabWebProgramming.Core.Specifications
                 Description = product.Description,
                 Price = (decimal)product.Price,
                 Stock = (decimal)product.Stock,
-                Categories = product.Categories.Select(category => new ProductCategoryDTO
+                /*Categories = product.Categories.Select(category => new ProductCategoryDTO
                 {
                     Id = category.Id,
                     CategoryName = category.CategoryName
                     // Additional category mappings if necessary
-                }).ToList()
+                }).ToList()*/
                 // Not mapping Producer inside ProductDTO to avoid recursion
             }).ToList()
         };

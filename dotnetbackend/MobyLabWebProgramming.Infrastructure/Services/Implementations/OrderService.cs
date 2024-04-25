@@ -71,6 +71,12 @@ namespace MobyLabWebProgramming.Infrastructure.Services.Implementations
                 return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "The user does not have admin or personnel permissions!", ErrorCodes.NotEnoughPermissions));
             }
 
+            var existingOrder = await _repository.GetAsync(new OrderSpec(orderId), cancellationToken);
+            if (existingOrder == null)
+            {
+                return ServiceResponse.FromError(new(HttpStatusCode.NotFound, "The order doesn't exist!", ErrorCodes.EntityNotFound));
+            }
+
             await _repository.DeleteAsync<Order>(orderId, cancellationToken);
             return ServiceResponse<ServiceResponse>.ForSuccess();
         }

@@ -21,10 +21,11 @@ namespace MobyLabWebProgramming.Core.Specifications
             Username = order.User.Username, 
             OrderDetails = order.OrderDetails.Select(detail => new OrderDetailDTO
             {
-                ProductId = detail.Id,
                 ProductName = detail.Product.Name,
                 Quantity = detail.Quantity,
-                UnitPrice = detail.UnitPrice
+                UnitPrice = detail.UnitPrice,
+                OrderId = detail.OrderId,
+                Id = detail.Id
             }).ToList()
         };
 
